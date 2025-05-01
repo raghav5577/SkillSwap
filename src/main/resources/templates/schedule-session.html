@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SkillSwap - Schedule Session</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .schedule-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #4A9D76;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        .back-link i {
+            margin-right: 8px;
+        }
+
+        .schedule-form {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        }
+
+        .session-info {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4a4a4a;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #4A9D76;
+            outline: none;
+        }
+
+        textarea.form-input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .schedule-button {
+            width: 100%;
+            background: #4A9D76;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .schedule-button:hover {
+            background: #3d8463;
+        }
+
+        .info-section {
+            margin-bottom: 24px;
+        }
+
+        .info-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .skill-badge {
+            display: inline-flex;
+            align-items: center;
+            background: #E1F0FF;
+            color: #1E88E5;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .instructor-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .instructor-name {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .info-box {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+
+        .info-box i {
+            color: #4A9D76;
+            margin-right: 8px;
+        }
+
+        .info-box p {
+            color: #4a63e7;
+            margin: 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="schedule-container">
+        <div class="schedule-form">
+            <a href="#" onclick="history.back()" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to skill details
+            </a>
+            <h1>Schedule a Session</h1>
+            <h2>Session Details</h2>
+            <form th:action="@{/meetings}" method="post">
+                <input type="hidden" name="skillName" th:value="${skill.name}">
+                <input type="hidden" name="tutor" th:value="${skill.tutor}">
+                
+                <div class="form-group">
+                    <label class="form-label" for="date">Date</label>
+                    <input type="date" id="date" name="date" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="time">Time</label>
+                    <select id="time" name="time" class="form-input" required>
+                        <option value="">Select a time</option>
+                        <option th:each="hour : ${#numbers.sequence(9, 17)}"
+                                th:value="${hour + ':00'}"
+                                th:text="${hour <= 12 ? hour + ':00 AM' : (hour - 12) + ':00 PM'}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="notes">Notes (optional)</label>
+                    <textarea id="notes" name="notes" class="form-input" 
+                              placeholder="Any specific topics or questions you'd like to discuss..."></textarea>
+                </div>
+
+                <button type="submit" class="schedule-button">Schedule Session</button>
+            </form>
+        </div>
+
+        <div class="session-info">
+            <h2>Session Information</h2>
+            
+            <div class="info-section">
+                <div class="info-label">Skill</div>
+                <div class="info-value">
+                    <span class="skill-badge" th:text="${skill.category}">Programming</span>
+                    <span th:text="${skill.name}">JavaScript Programming</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-label">Instructor</div>
+                <div class="instructor-info">
+                    <img th:src="@{https://i.pravatar.cc/150(img=${skill.id})}" 
+                         th:alt="${skill.tutor}" class="instructor-avatar">
+                    <span class="instructor-name" th:text="${skill.tutor}">Alex Johnson</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-label">Duration</div>
+                <div class="info-value">
+                    <i class="far fa-clock"></i>
+                    <span th:text="${skill.sessionDuration + ' hour per session'}">1 hour per session</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <p>Once scheduled, you'll receive a confirmation message from the instructor. You can reschedule or cancel the session up to 24 hours before the scheduled time.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

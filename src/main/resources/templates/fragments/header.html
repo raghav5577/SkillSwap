@@ -4,16 +4,135 @@
     <meta charset="UTF-8">
     <title th:text="${title} ?: 'Skill Swap'">Skill Swap</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: #f7f9fb;
+        }
+
+        .header {
+            width: 100%;
+            background: #4A9D76;
+            color: #fff;
+            padding: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 18px 32px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .header-icon:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            padding: 4px;
+            font-size: 0.7rem;
+            min-width: 8px;
+            height: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.12);
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .profile-section:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .profile-image {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
-<header style="width:100%;background:#4f8cff;color:#fff;padding:0;">
-    <div style="display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:18px 32px;">
-        <div style="font-size:2rem;font-weight:bold;letter-spacing:2px;">
-            <a href="/dashboard" style="color:#fff;text-decoration:none;">SKILL SWAP</a>
-        </div>
-        <div>
-            <a href="/profile" style="color:#fff;text-decoration:none;font-size:1.1rem;padding:8px 18px;border-radius:20px;background:rgba(255,255,255,0.12);transition:background 0.2s;">
-                <span style="vertical-align:middle;">&#128100;</span> Account
+<header class="header">
+    <div class="header-content">
+        <a href="/dashboard" class="logo">
+            <i class="fas fa-exchange-alt"></i>
+            SKILL SWAP
+        </a>
+        <div class="header-right">
+            <a href="/messages" class="header-icon">
+                <i class="far fa-comment-dots"></i>
+                <span class="notification-badge" th:if="${messages != null and !messages.empty}" th:text="${messages.size()}">3</span>
+            </a>
+            <a href="/profile" class="profile-section">
+                <img th:src="${userAvatar != null ? userAvatar : 'https://i.pravatar.cc/150?img=1'}" 
+                     alt="Profile" 
+                     class="profile-image">
+                <span class="profile-name" th:text="${username}">Account</span>
             </a>
         </div>
     </div>
@@ -27,3 +146,5 @@
     <li><a href="/messages">Your Messages</a></li>
     <li><a href="/profile">Profile/Account</a></li>
 </ul>
+</main>
+</html>

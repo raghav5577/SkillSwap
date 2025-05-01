@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<th:block th:replace="fragments/header :: header"></th:block>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Skill Swap - Dashboard</title>
+    <title>SkillSwap - Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         html, body {
             height: 100%;
@@ -72,52 +73,972 @@
         #dashboard-suggestions li:hover {
             background: #f0f4fa;
         }
+        .logout-form {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .logout-button {
+            width: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: inherit;
+            font: inherit;
+            padding: 16px;
+            transition: background-color 0.2s;
+        }
+        
+        .logout-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .logout-button i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item.logout-form:hover {
+            background: none;
+        }
+
+        /* Add Skill nav item styles */
+        .nav-item[onclick] {
+            cursor: pointer;
+        }
+
+        .nav-item[onclick]:hover {
+            background-color: rgba(74, 157, 118, 0.1);
+        }
+
+        .nav-item[onclick] i {
+            color: #4A9D76;
+        }
+
+        .nav-item[onclick]:hover i,
+        .nav-item[onclick]:hover span {
+            color: #3d8463;
+        }
+
+        /* Schedule Meeting Modal Styles */
+        .schedule-meeting-form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .schedule-meeting-form h2 {
+            color: #333;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .input-with-suggestions {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f5f8ff;
+        }
+
+        .suggestion-category {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .suggestion-details {
+            flex: 1;
+        }
+
+        .suggestion-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .suggestion-tutor {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Form input styles */
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input[type="date"],
+        .form-group input[type="time"],
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Modal footer styles */
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e4e4e4;
+        }
+
+        .btn-primary {
+            background: #4A9D76;
+            border: 1px solid #408B68;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #408B68;
+        }
+
+        .btn i {
+            font-size: 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(74, 157, 118, 0.1);
+        }
+
+        .nav-item.active {
+            background-color: rgba(74, 157, 118, 0.1);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+            color: #4A9D76;
+        }
+
+        .nav-item span {
+            font-size: 0.9rem;
+        }
+
+        a.nav-item {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .upcoming-sessions-modal .modal-content {
+            max-width: 800px;
+            padding: 32px;
+        }
+
+        .session-cards {
+            display: grid;
+            gap: 20px;
+            margin-top: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .session-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .session-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .skill-info {
+            flex: 1;
+        }
+
+        .skill-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .session-datetime {
+            color: #4A9D76;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tutor-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .tutor-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .tutor-name {
+            font-size: 1rem;
+            color: #4a4a4a;
+        }
+
+        .meet-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f9f4;
+            padding: 12px;
+            border-radius: 8px;
+            color: #4A9D76;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .meet-link:hover {
+            background: #e1f4e8;
+        }
+
+        .meet-link i {
+            font-size: 1.2rem;
+        }
+
+        .no-sessions {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-sessions i {
+            font-size: 3rem;
+            color: #4A9D76;
+            margin-bottom: 16px;
+        }
+
+        .no-sessions p {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .schedule-now-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #4A9D76;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .schedule-now-btn:hover {
+            background: #3d8463;
+        }
     </style>
 </head>
 
 <body>
-    <div class="navbar" style="display:flex;justify-content:center;gap:30px;background:#f4f6fb;padding:16px 0 8px 0;border-bottom:1px solid #e0e0e0;">
-        <a href="/skills">View/Add Skills</a>
-        <a href="/meetings">Schedule/View Meetings</a>
-        <a href="/your-meetings">Your Meetings</a>
-        <a href="/messages">Your Messages</a>
-        <form th:action="@{/logout}" method="post" style="display:inline;">
-            <button type="submit" style="background:none;border:none;color:#4f8cff;cursor:pointer;padding:0;">Logout</button>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="logo">
+            <span class="logo-text-skill">SKILL</span><span class="logo-text-swap">SWAP</span>
+        </a>
+        <div class="header-right">
+            <a href="/messages" class="header-icon">
+                <i class="far fa-comment-dots"></i>
+                <span class="notification-badge" th:if="${messages != null and !messages.empty}" th:text="${messages.size()}">3</span>
+            </a>
+            <a href="/notifications" class="header-icon">
+                <i class="far fa-bell"></i>
+                <span class="notification-badge">2</span>
+            </a>
+            <div class="profile-section">
+                <img th:src="${userAvatar != null ? userAvatar : 'https://i.pravatar.cc/150?img=1'}" 
+                     alt="Profile" 
+                     class="profile-image">
+                <span class="profile-name" th:text="${username}">Demo User</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="openUpcomingSessionsModal()">
+            <i class="fas fa-calendar-check"></i>
+            <span>Upcoming Sessions</span>
+        </div>
+        <div class="nav-item" onclick="openAddSkillModal()">
+            <i class="fas fa-plus-circle"></i>
+            <span>Add Skill</span>
+        </div>
+        <div class="nav-item" onclick="openScheduleModal()">
+            <i class="fas fa-calendar-plus"></i>
+            <span>Schedule Meeting</span>
+        </div>
+        <form th:action="@{/logout}" method="post" class="nav-item logout-form">
+            <button type="submit" class="nav-item logout-button">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
         </form>
+    </nav>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="section-header">
+                <h1 class="section-title">Discover Skills</h1>
+                <p class="section-subtitle">Connect with experts and learn something new today</p>
+            </div>
+
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <input type="text" class="search-input" id="skillSearch" 
+                           placeholder="e.g. JavaScript Programming" autocomplete="off">
+                    <div id="searchSuggestions" class="search-suggestions" style="display: none;"></div>
+                </div>
+                <button class="category-filter">
+                    <i class="fas fa-filter"></i>
+                    All Categories
+                </button>
+                <button class="btn btn-primary" onclick="openAddSkillModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Skill
+                </button>
+            </div>
+
+            <!-- Add Skill Modal -->
+            <div id="addSkillModal" class="modal">
+                <div class="modal-content">
+                    <form th:action="@{/skills}" method="post" class="add-skill-form" id="addSkillForm" onsubmit="handleAddSkill(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="skillName">Skill Name</label>
+                                <div class="input-with-suggestions">
+                                    <input type="text" id="skillName" name="name" 
+                                        placeholder="e.g. JavaScript Programming" 
+                                        autocomplete="off" required>
+                                    <div id="addSkillSuggestions" class="search-suggestions" style="display: none;"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select id="category" name="category" required>
+                                    <option value="Programming">Programming</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Music">Music</option>
+                                    <option value="Language">Language</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" 
+                                placeholder="Describe what students will learn and your teaching approach..." 
+                                required></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sessionDuration">Session Duration</label>
+                                <select id="sessionDuration" name="sessionDuration" required>
+                                    <option value="1">1 hour</option>
+                                    <option value="1.5">1.5 hours</option>
+                                    <option value="2">2 hours</option>
+                                    <option value="2.5">2.5 hours</option>
+                                    <option value="3">3 hours</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="classSize">Class Size</label>
+                                <select id="classSize" name="classSize" required>
+                                    <option value="One-on-one">One-on-one</option>
+                                    <option value="Small">Small (2-5)</option>
+                                    <option value="Medium">Medium (6-15)</option>
+                                    <option value="Large">Large (15+)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Availability</label>
+                            <div class="availability-grid">
+                                <button type="button" class="day-button" data-day="Monday">Monday</button>
+                                <button type="button" class="day-button" data-day="Tuesday">Tuesday</button>
+                                <button type="button" class="day-button" data-day="Wednesday">Wednesday</button>
+                                <button type="button" class="day-button" data-day="Thursday">Thursday</button>
+                                <button type="button" class="day-button" data-day="Friday">Friday</button>
+                                <button type="button" class="day-button" data-day="Saturday">Saturday</button>
+                                <button type="button" class="day-button" data-day="Sunday">Sunday</button>
+                            </div>
+                            <input type="hidden" name="availability" id="availability">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hourlyRate">Hourly Rate (INR)</label>
+                            <div class="rate-input">
+                                <span class="currency">₹</span>
+                                <input type="number" id="hourlyRate" name="hourlyRate" 
+                                    placeholder="0.00" step="0.01" min="0" required>
+                                <span class="per-hour">/hr</span>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeAddSkillModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Add Skill
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="skills-grid">
+                <!-- Dynamic Skill Cards -->
+                <div th:each="skill : ${skills}" class="skill-card">
+                    <div class="skill-header">
+                        <span th:class="'skill-category ' + ${skill.category?.toLowerCase()}" th:text="${skill.category}">Category</span>
+                        <div class="skill-rating">
+                            <i class="fas fa-star rating-star"></i>
+                            <span th:text="${skill.formattedRating}">4.5</span>
+                        </div>
+                    </div>
+                    <h2 class="skill-title" th:text="${skill.name}">Skill Name</h2>
+                    <div class="tutor-info">
+                        <img th:src="@{https://i.pravatar.cc/150(img=${skill.id})}" th:alt="${skill.tutor}" class="tutor-avatar">
+                        <span class="tutor-name" th:text="${skill.tutor}">Tutor Name</span>
+                    </div>
+                    <p class="skill-description" th:text="${skill.description}">Skill description goes here.</p>
+                    <div class="card-actions">
+                        <a th:href="@{/skills/{id}(id=${skill.id})}" class="btn btn-primary" style="background-color: #4A9D76; border-color: #4A9D76;">View details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="container">
-        <h2>Welcome, <span th:text="${username}"></span>!</h2>
-        <div class="search-section">
-            <form th:action="@{/dashboard}" method="get" style="display:flex;gap:10px;flex-wrap:wrap;position:relative;">
-                <input type="text" id="dashboard-search" name="query" th:value="${query}" placeholder="Search skill or community..." style="flex:1;min-width:150px;" autocomplete="off">
-                <button type="submit">Search</button>
-                <div id="dashboard-suggestions"></div>
+
+    <!-- Schedule Meeting Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <form th:action="@{/meetings}" method="post" class="schedule-meeting-form" id="scheduleMeetingForm" onsubmit="handleScheduleMeeting(event)">
+                <h2>Schedule a Meeting</h2>
+                
+                <!-- Search Skills Section -->
+                <div class="form-group">
+                    <label for="skillSearch">Search Skills</label>
+                    <div class="input-with-suggestions">
+                        <input type="text" id="meetingSkillSearch" name="skillName" 
+                            placeholder="Search for a skill..." 
+                            autocomplete="off" required>
+                        <div id="meetingSkillSuggestions" class="search-suggestions" style="display: none;"></div>
+                    </div>
+                    <input type="hidden" id="selectedSkillId" name="skillId">
+                    <input type="hidden" id="selectedTutorId" name="tutor">
+                </div>
+
+                <!-- Date and Time Selection -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="meetingDate">Date</label>
+                        <input type="date" id="meetingDate" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingTime">Time</label>
+                        <input type="time" id="meetingTime" name="time" required>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="form-group">
+                    <label for="meetingNotes">Notes (Optional)</label>
+                    <textarea id="meetingNotes" name="notes" 
+                        placeholder="Add any notes or questions for the tutor..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeScheduleModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i>
+                        Schedule Session
+                    </button>
+                </div>
             </form>
         </div>
-        <!-- Search Results Section -->
-        <div th:if="${query != null and query != ''}">
-            <h3>Search Results</h3>
-            <ul style="list-style:none;padding:0;">
-                <li th:each="skill : ${skills}" class="skill-card">
-                    <b th:text="${skill.name}"></b> - <span th:text="${skill.description}"></span>
-                    <br>
-                    <small>Tutor: <span th:text="${skill.tutor}"></span></small>
-                </li>
-                <li th:if="${#lists.isEmpty(skills)}">No results found for "<span th:text="${query}"></span>".</li>
-            </ul>
-        </div>
-        <!-- Community Skills Section (only show if not searching) -->
-        <div class="skills-list" th:if="${query == null or query == ''}">
-            <h3>Community Skills</h3>
-            <ul style="list-style:none;padding:0;">
-                <li th:each="skill : ${skills}" class="skill-card">
-                    <b th:text="${skill.name}"></b> - <span th:text="${skill.description}"></span>
-                    <br>
-                    <small>Tutor: <span th:text="${skill.tutor}"></span></small>
-                </li>
-            </ul>
+    </div>
+
+    <!-- Upcoming Sessions Modal -->
+    <div id="upcomingSessionsModal" class="modal upcoming-sessions-modal">
+        <div class="modal-content">
+            <h2>Upcoming Sessions</h2>
+            <p class="section-subtitle">Your scheduled learning sessions and meet links</p>
+
+            <div class="session-cards">
+                <!-- If there are no sessions -->
+                <div th:if="${#lists.isEmpty(meetings)}" class="no-sessions">
+                    <i class="far fa-calendar-alt"></i>
+                    <p>You don't have any upcoming sessions</p>
+                    <button type="button" class="schedule-now-btn" onclick="openScheduleModal()">
+                        <i class="fas fa-plus"></i>
+                        Schedule Now
+                    </button>
+                </div>
+
+                <!-- Session Cards -->
+                <div th:each="meeting : ${meetings}" class="session-card">
+                    <div class="session-header">
+                        <div class="skill-info">
+                            <h3 class="skill-name" th:text="${meeting.skillName}">Skill Name</h3>
+                            <div class="session-datetime">
+                                <i class="far fa-clock"></i>
+                                <span th:text="${meeting.dateTime}">Date and Time</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tutor-info">
+                        <img th:src="@{https://i.pravatar.cc/150(img=${meeting.id})}" 
+                             th:alt="${meeting.tutor}" 
+                             class="tutor-avatar">
+                        <span class="tutor-name" th:text="${meeting.tutor}">Tutor Name</span>
+                    </div>
+
+                    <a href="https://meet.google.com/yjo-ovzu-ijw" target="_blank" class="meet-link">
+                        <i class="fas fa-video"></i>
+                        Join Google Meet
+                    </a>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeUpcomingSessionsModal()">Close</button>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Search functionality with suggestions
+        const searchInput = document.querySelector('#skillSearch');
+        const suggestionsContainer = document.querySelector('#searchSuggestions');
+        const skillCards = document.querySelectorAll('.skill-card');
+
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm.length === 0) {
+                suggestionsContainer.style.display = 'none';
+                skillCards.forEach(card => card.style.display = 'block');
+                return;
+            }
+
+            // Filter and display suggestions
+            const suggestions = Array.from(skillCards)
+                .filter(card => {
+                    const title = card.querySelector('.skill-title').textContent.toLowerCase();
+                    const description = card.querySelector('.skill-description').textContent.toLowerCase();
+                    const category = card.querySelector('.skill-category').textContent.toLowerCase();
+                    return title.includes(searchTerm) || 
+                           description.includes(searchTerm) || 
+                           category.includes(searchTerm);
+                })
+                .map(card => ({
+                    name: card.querySelector('.skill-title').textContent,
+                    category: card.querySelector('.skill-category').textContent,
+                    tutor: card.querySelector('.tutor-name').textContent
+                }));
+
+            if (suggestions.length > 0) {
+                suggestionsContainer.innerHTML = suggestions
+                    .map(suggestion => `
+                        <div class="suggestion-item" onclick="selectSkill('${suggestion.name}')">
+                            <span class="suggestion-category ${suggestion.category.toLowerCase()}">${suggestion.category}</span>
+                            <div class="suggestion-details">
+                                <div class="suggestion-name">${suggestion.name}</div>
+                                <div class="suggestion-tutor">by ${suggestion.tutor}</div>
+                            </div>
+                        </div>
+                    `)
+                    .join('');
+                suggestionsContainer.style.display = 'block';
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
+
+            // Filter visible cards
+            skillCards.forEach(card => {
+                const title = card.querySelector('.skill-title').textContent.toLowerCase();
+                const description = card.querySelector('.skill-description').textContent.toLowerCase();
+                const category = card.querySelector('.skill-category').textContent.toLowerCase();
+                if (title.includes(searchTerm) || 
+                    description.includes(searchTerm) || 
+                    category.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        function selectSkill(skillName) {
+            searchInput.value = skillName;
+            suggestionsContainer.style.display = 'none';
+            // Filter cards to show only the selected skill
+            skillCards.forEach(card => {
+                const title = card.querySelector('.skill-title').textContent;
+                card.style.display = title === skillName ? 'block' : 'none';
+            });
+        }
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+
+        // Modal functionality
+        function openAddSkillModal() {
+            document.getElementById('addSkillModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeAddSkillModal() {
+            document.getElementById('addSkillModal').style.display = 'none';
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addSkillModal');
+            if (event.target == modal) {
+                closeAddSkillModal();
+            }
+        }
+
+        // Handle day selection
+        document.querySelectorAll('.day-button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('selected');
+                updateAvailability();
+            });
+        });
+
+        function updateAvailability() {
+            const selectedDays = Array.from(document.querySelectorAll('.day-button.selected'))
+                .map(button => button.dataset.day);
+            document.getElementById('availability').value = selectedDays.join(',');
+        }
+
+        // Add Skill form suggestions
+        const skillNameInput = document.querySelector('#skillName');
+        const addSkillSuggestions = document.querySelector('#addSkillSuggestions');
+
+        skillNameInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm.length === 0) {
+                addSkillSuggestions.style.display = 'none';
+                return;
+            }
+
+            // Get existing skills from the cards
+            const existingSkills = Array.from(skillCards)
+                .map(card => ({
+                    name: card.querySelector('.skill-title').textContent,
+                    category: card.querySelector('.skill-category').textContent,
+                    tutor: card.querySelector('.tutor-name').textContent
+                }))
+                .filter(skill => 
+                    skill.name.toLowerCase().includes(searchTerm) ||
+                    skill.category.toLowerCase().includes(searchTerm)
+                );
+
+            if (existingSkills.length > 0) {
+                addSkillSuggestions.innerHTML = existingSkills
+                    .map(skill => `
+                        <div class="suggestion-item" onclick="selectAddSkill('${skill.name}', '${skill.category}')">
+                            <span class="suggestion-category ${skill.category.toLowerCase()}">${skill.category}</span>
+                            <div class="suggestion-details">
+                                <div class="suggestion-name">${skill.name}</div>
+                                <div class="suggestion-tutor">by ${skill.tutor}</div>
+                            </div>
+                        </div>
+                    `)
+                    .join('');
+                addSkillSuggestions.style.display = 'block';
+            } else {
+                addSkillSuggestions.style.display = 'none';
+            }
+        });
+
+        function selectAddSkill(skillName, category) {
+            skillNameInput.value = skillName;
+            document.querySelector('#category').value = category;
+            addSkillSuggestions.style.display = 'none';
+        }
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!skillNameInput.contains(e.target) && !addSkillSuggestions.contains(e.target)) {
+                addSkillSuggestions.style.display = 'none';
+            }
+        });
+
+        function handleAddSkill(event) {
+            event.preventDefault();
+            const form = document.getElementById('addSkillForm');
+            
+            // Update availability before submission
+            updateAvailability();
+            
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    closeAddSkillModal();
+                    window.location.href = '/dashboard';
+                } else {
+                    console.error('Error adding skill');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // When page loads, check if we have a hash and scroll to it
+        window.addEventListener('load', function() {
+            if (window.location.hash === '#discover-skills') {
+                const discoverSection = document.querySelector('.section-header');
+                if (discoverSection) {
+                    discoverSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+
+        // Schedule Meeting Modal functionality
+        function openScheduleModal() {
+            document.getElementById('scheduleModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Meeting Skill Search functionality
+        const meetingSkillSearch = document.querySelector('#meetingSkillSearch');
+        const meetingSkillSuggestions = document.querySelector('#meetingSkillSuggestions');
+
+        meetingSkillSearch.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm.length === 0) {
+                meetingSkillSuggestions.style.display = 'none';
+                return;
+            }
+
+            const suggestions = Array.from(skillCards)
+                .filter(card => {
+                    const title = card.querySelector('.skill-title').textContent.toLowerCase();
+                    const category = card.querySelector('.skill-category').textContent.toLowerCase();
+                    return title.includes(searchTerm) || category.includes(searchTerm);
+                })
+                .map(card => ({
+                    id: card.dataset.skillId,
+                    name: card.querySelector('.skill-title').textContent,
+                    category: card.querySelector('.skill-category').textContent,
+                    tutor: card.querySelector('.tutor-name').textContent,
+                    tutorId: card.dataset.tutorId
+                }));
+
+            if (suggestions.length > 0) {
+                meetingSkillSuggestions.innerHTML = suggestions
+                    .map(suggestion => `
+                        <div class="suggestion-item" onclick="selectMeetingSkill('${suggestion.id}', '${suggestion.name}', '${suggestion.tutorId}')">
+                            <span class="suggestion-category ${suggestion.category.toLowerCase()}">${suggestion.category}</span>
+                            <div class="suggestion-details">
+                                <div class="suggestion-name">${suggestion.name}</div>
+                                <div class="suggestion-tutor">by ${suggestion.tutor}</div>
+                            </div>
+                        </div>
+                    `)
+                    .join('');
+                meetingSkillSuggestions.style.display = 'block';
+            } else {
+                meetingSkillSuggestions.style.display = 'none';
+            }
+        });
+
+        function selectMeetingSkill(skillId, skillName, tutorId) {
+            meetingSkillSearch.value = skillName;
+            document.getElementById('selectedSkillId').value = skillId;
+            document.getElementById('selectedTutorId').value = tutorId;
+            meetingSkillSuggestions.style.display = 'none';
+        }
+
+        // Set minimum date to today for the date picker
+        const meetingDateInput = document.getElementById('meetingDate');
+        const today = new Date().toISOString().split('T')[0];
+        meetingDateInput.min = today;
+
+        function handleScheduleMeeting(event) {
+            event.preventDefault();
+            const form = document.getElementById('scheduleMeetingForm');
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    closeScheduleModal();
+                    // Show success message
+                    alert('Meeting scheduled successfully! A Google Meet link has been sent to both you and the tutor.');
+                    window.location.reload();
+                } else {
+                    console.error('Error scheduling meeting');
+                    alert('Failed to schedule meeting. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to schedule meeting. Please try again.');
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const upcomingSessionsModal = document.getElementById('upcomingSessionsModal');
+            const scheduleModal = document.getElementById('scheduleModal');
+            const addSkillModal = document.getElementById('addSkillModal');
+            
+            if (event.target == upcomingSessionsModal) {
+                closeUpcomingSessionsModal();
+            } else if (event.target == scheduleModal) {
+                closeScheduleModal();
+            } else if (event.target == addSkillModal) {
+                closeAddSkillModal();
+            }
+        }
+
+        function openUpcomingSessionsModal() {
+            document.getElementById('upcomingSessionsModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeUpcomingSessionsModal() {
+            document.getElementById('upcomingSessionsModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    </script>
 </body>
 </html>
 <script>

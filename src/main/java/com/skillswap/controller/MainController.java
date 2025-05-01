@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +28,16 @@ public class MainController {
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
     private List<Skill> skills = new ArrayList<Skill>() {{
         add(new Skill("Java Programming", "Learn Java from basics to advanced", "Alice"));
-        add(new Skill("Web Development", "HTML, CSS, JavaScript for beginners", "Bob"));
+        add(new Skill("Web Development", "HTML, CSS, JavaScript and modern frameworks", "Bob", "Programming", "2", "Small", Arrays.asList("Monday", "Wednesday", "Friday"), 1500.0));
         add(new Skill("Public Speaking", "Improve your communication skills", "Charlie"));
         add(new Skill("Photography", "Basics of digital photography", "Diana"));
         add(new Skill("Python Programming", "Introduction to Python", "Ethan"));
+        add(new Skill("Frontend Development", "Modern frontend frameworks and tools", "Frank", "Programming", "2", "Small", Arrays.asList("Tuesday", "Thursday", "Saturday"), 1200.0));
+        add(new Skill("Backend Development", "Server-side programming and databases", "Grace", "Programming", "2.5", "Small", Arrays.asList("Monday", "Wednesday", "Friday"), 1800.0));
+        add(new Skill("Full Stack Development", "End-to-end web application development", "Henry", "Programming", "3", "Small", Arrays.asList("Tuesday", "Thursday", "Saturday"), 2000.0));
+        add(new Skill("UI/UX Design", "Create beautiful and functional interfaces", "Isabella", "Design", "2", "Small", Arrays.asList("Monday", "Wednesday"), 1500.0));
+        add(new Skill("Digital Marketing", "SEO, SEM, and social media marketing", "Nina"));
+        add(new Skill("Mobile App Development", "Build Android and iOS apps", "Oscar"));
         add(new Skill("Cooking", "Master the art of cooking delicious meals", "Fiona"));
         add(new Skill("Dancing", "Learn various dance forms", "George"));
         add(new Skill("Guitar Playing", "Play acoustic and electric guitar", "Hannah"));
@@ -39,9 +46,6 @@ public class MainController {
         add(new Skill("Yoga", "Yoga for beginners and advanced", "Kevin"));
         add(new Skill("Chess", "Improve your chess strategies", "Laura"));
         add(new Skill("French Language", "Learn to speak French fluently", "Mike"));
-        add(new Skill("Digital Marketing", "SEO, SEM, and social media marketing", "Nina"));
-        add(new Skill("Mobile App Development", "Build Android and iOS apps", "Oscar"));
-        add(new Skill("Creative Writing", "Write stories, poems, and more", "Paula"));
         add(new Skill("Photography Editing", "Edit photos like a pro", "Quentin"));
         add(new Skill("Swimming", "Learn swimming from basics", "Rachel"));
         add(new Skill("Mathematics", "Algebra, calculus, and more", "Steve"));
@@ -95,9 +99,20 @@ public class MainController {
     }
     
     @PostMapping("/skills")
-    public String addSkill(@RequestParam String name, @RequestParam String description, Principal principal) {
-        skills.add(new Skill(name, description, principal.getName()));
-        return "redirect:/skills";
+    public String addSkill(@RequestParam String name,
+                          @RequestParam String description,
+                          @RequestParam String category,
+                          @RequestParam String sessionDuration,
+                          @RequestParam String classSize,
+                          @RequestParam String availability,
+                          @RequestParam double hourlyRate,
+                          Principal principal) {
+        List<String> availabilityList = Arrays.asList(availability.split(","));
+        Skill newSkill = new Skill(name, description, principal.getName(), 
+                                 category, sessionDuration, classSize, 
+                                 availabilityList, hourlyRate);
+        skills.add(newSkill);
+        return "redirect:/dashboard";
     }
 
     @GetMapping("/meetings")
@@ -106,26 +121,66 @@ public class MainController {
         return "meetings";
     }
 
+    @RequestMapping(value = "/schedule/{id}", method = RequestMethod.GET)
+    public String scheduleSession(@PathVariable("id") Long id, Model model) {
+        logger.info("Accessing schedule page for skill ID: {}", id);
+        
+        // Find the skill
+        Skill skillToSchedule = null;
+        for (Skill s : skills) {
+            if (s.getId().equals(id)) {
+                skillToSchedule = s;
+                break;
+            }
+        }
+        
+        // If skill not found, redirect to dashboard
+        if (skillToSchedule == null) {
+            logger.warn("Skill not found with ID: {}", id);
+            return "redirect:/dashboard";
+        }
+        
+        // Add skill to model and render template
+        logger.info("Found skill: {}, rendering schedule page", skillToSchedule.getName());
+        model.addAttribute("skill", skillToSchedule);
+        return "schedule-session";
+    }
+
     @PostMapping("/meetings")
-    public String scheduleMeeting(@RequestParam String skillName, @RequestParam String tutor, @RequestParam String dateTime, Principal principal) {
+    public String scheduleMeeting(@RequestParam String skillName, 
+                                @RequestParam String tutor,
+                                @RequestParam String date,
+                                @RequestParam String time,
+                                @RequestParam(required = false) String notes,
+                                Principal principal) {
         // Generate a mock Google Meet link
         String meetLink = "https://meet.google.com/" + UUID.randomUUID().toString().substring(0, 8);
     
+        // Combine date and time
+        String dateTime = date + " " + time;
+    
         // Create meeting
-        meetings.add(new Meeting(skillName, tutor, principal.getName(), dateTime));
+        Meeting meeting = new Meeting(skillName, tutor, principal.getName(), dateTime);
+        meeting.setMeetLink(meetLink);  // Set the Google Meet link
+        meetings.add(meeting);
     
         // Prepare notification message with clickable link
-        String message = "Meeting scheduled for skill: " + skillName +
-                " on " + dateTime +
-                ". Google Meet link: <a href='" + meetLink + "' target='_blank'>" + meetLink + "</a>";
+        String message = String.format(
+            "Meeting scheduled for skill: %s on %s at %s. %s Google Meet link: %s",
+            skillName, date, time,
+            notes != null ? "Notes: " + notes + "." : "",
+            meetLink
+        );
     
         // Send message to learner
-        userMessages.computeIfAbsent(principal.getName(), k -> new ArrayList<>()).add("To Learner: " + message);
+        userMessages.computeIfAbsent(principal.getName(), k -> new ArrayList<>())
+                   .add("To Learner: " + message);
     
         // Send message to tutor
-        userMessages.computeIfAbsent(tutor, k -> new ArrayList<>()).add("To Tutor: " + message);
+        userMessages.computeIfAbsent(tutor, k -> new ArrayList<>())
+                   .add("To Tutor: " + message);
     
-        return "redirect:/meetings";
+        return "redirect:/dashboard";
     }
 
     @Autowired
@@ -141,12 +196,24 @@ public class MainController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam String username, @RequestParam String password, @RequestParam String role, Model model) {
+    public String registerUser(@RequestParam String username, 
+                             @RequestParam String password,
+                             @RequestParam String fullName,
+                             @RequestParam(required = false) String confirmPassword,
+                             @RequestParam String role, 
+                             Model model) {
         try {
             logger.debug("Attempting to register user: {} with role: {}", username, role);
-            if (userDetailsManager.userExists(username)) {
+            
+            // Validate password confirmation
+            if (confirmPassword != null && !password.equals(confirmPassword)) {
+                model.addAttribute("error", "Passwords do not match!");
+                return "register";
+            }
+            
+        if (userDetailsManager.userExists(username)) {
                 logger.debug("Username already exists: {}", username);
-                model.addAttribute("error", "Username already exists!");
+                model.addAttribute("error", "Email address already exists!");
                 return "register";
             }
             
@@ -161,7 +228,8 @@ public class MainController {
             userDetailsManager.createUser(userBuilder.build());
             logger.debug("User created successfully: {} with role: {}", username, role);
             
-            return "redirect:/login";
+            // Redirect to login page with success message
+            return "redirect:/login?registered=true";
         } catch (Exception e) {
             logger.error("Error registering user: {}", e.getMessage(), e);
             model.addAttribute("error", "Registration failed. Please try again.");
@@ -236,5 +304,44 @@ public class MainController {
         List<String> messages = userMessages.getOrDefault(principal.getName(), new ArrayList<>());
         model.addAttribute("messages", messages);
         return "messages";
+    }
+
+    @GetMapping("/skills/{id}")
+    public String viewSkill(@PathVariable Long id, Model model) {
+        // Find the skill with the given ID
+        Skill skill = null;
+        for (Skill s : skills) {
+            if (s.getId() != null && s.getId().equals(id)) {
+                skill = s;
+                break;
+            }
+        }
+
+        if (skill == null) {
+            // If skill not found, redirect to dashboard
+            return "redirect:/dashboard";
+        }
+
+        // Add the skill to the model
+        model.addAttribute("skill", skill);
+        return "skill-details";
+    }
+
+    @GetMapping("/upcoming-sessions")
+    public String upcomingSessions(Model model, Principal principal) {
+        logger.info("Accessing upcoming sessions page for user: {}", principal.getName());
+        List<Meeting> upcomingMeetings = new ArrayList<>();
+        for (Meeting meeting : meetings) {
+            if (meeting.getLearner() != null && 
+                (meeting.getLearner().equalsIgnoreCase(principal.getName()) ||
+                meeting.getTutor().equalsIgnoreCase(principal.getName()))) {
+                upcomingMeetings.add(meeting);
+            }
+        }
+        logger.info("Found {} upcoming meetings", upcomingMeetings.size());
+        model.addAttribute("meetings", upcomingMeetings);
+        model.addAttribute("username", principal.getName());
+        model.addAttribute("messages", userMessages.getOrDefault(principal.getName(), new ArrayList<>()));
+        return "/upcoming-sessions";
     }
 }

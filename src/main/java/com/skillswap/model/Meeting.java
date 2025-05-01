@@ -12,6 +12,7 @@ public class Meeting {
     private String tutor;
     private String learner;
     private String dateTime;
+    private String meetLink;
 
     public Meeting() {}
 
@@ -33,4 +34,6 @@ public class Meeting {
     public void setLearner(String learner) { this.learner = learner; }
     public String getDateTime() { return dateTime; }
     public void setDateTime(String dateTime) { this.dateTime = dateTime; }
+    public String getMeetLink() { return meetLink; }
+    public void setMeetLink(String meetLink) { this.meetLink = meetLink; }
 }

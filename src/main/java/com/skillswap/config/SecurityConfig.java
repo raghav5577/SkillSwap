@@ -28,36 +28,41 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, InMemoryUserDetailsManager userDetailsManager) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         logger.debug("Configuring SecurityFilterChain");
         
         // Configure AuthenticationManagerBuilder
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder
-            .userDetailsService(userDetailsManager)
+            .userDetailsService(userDetailsService())
             .passwordEncoder(passwordEncoder);
 
         http
-            .csrf()
-                .and()
             .authorizeRequests()
-                .antMatchers("/register", "/css/**", "/style.css", "/js/**", "/images/**", "/h2-console/**").permitAll()
+                .antMatchers("/login", "/register", "/css/**", "/js/**", "/images/**", "/style.css").permitAll()
+                .antMatchers("/schedule/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/skills/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/meetings/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/dashboard/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/your-meetings/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/messages/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/upcoming-sessions/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
             .and()
                 .formLogin()
                 .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
                 .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/login?error=true")
                 .permitAll()
-            .and()
-                .logout()
-                .logoutSuccessUrl("/login?logout=true")
+                .and()
+            .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
-                .permitAll();
+                .permitAll()
+            .and()
+            .csrf().disable(); // Temporarily disable CSRF for testing
         
         // For debugging purposes
         http.headers().frameOptions().disable();

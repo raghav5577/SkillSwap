@@ -3,21 +3,136 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Messages</title>
+    <style>
+        body {
+            background: #f7f9fb;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .messages-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px 40px;
+            background: #fff;
+            min-height: calc(100vh - 200px);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            border-radius: 12px;
+        }
+
+        .messages-title {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .messages-title i {
+            color: #4A9D76;
+        }
+
+        .messages-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .message-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .message-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-item a {
+            color: #4A9D76;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .message-item a:hover {
+            text-decoration: underline;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 100px;
+            left: 40px;
+            font-size: 1.5rem;
+            text-decoration: none;
+            color: #4A9D76;
+            background: #fff;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            color: #fff;
+            background: #4A9D76;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 157, 118, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .back-button {
+                position: absolute;
+                top: 24px;
+                left: 24px;
+            }
+        }
+
+        .no-messages {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-messages i {
+            font-size: 3rem;
+            color: #4A9D76;
+            margin-bottom: 16px;
+        }
+
+        .no-messages p {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+    </style>
 </head>
 <body>
-    <a href="/dashboard" style="position:absolute;top:24px;left:24px;font-size:2rem;text-decoration:none;color:#4f8cff;z-index:1000;">&#8592;</a>
-    <div class="container">
-        <h2>Your Messages</h2>
-        <ul>
-            <li th:each="msg : ${messages}" th:utext="${msg}"></li>
+    <a href="/dashboard" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <div class="messages-container">
+        <h2 class="messages-title">
+            <i class="far fa-comment-dots"></i>
+            Your Messages
+        </h2>
+        <ul class="messages-list">
+            <li th:if="${#lists.isEmpty(messages)}" class="no-messages">
+                <i class="far fa-comment-dots"></i>
+                <p>You don't have any messages yet</p>
+            </li>
+            <li th:each="msg : ${messages}" th:utext="${msg}" class="message-item"></li>
         </ul>
     </div>
 </body>
 </html>
-
-<div class="container">
-    <h2>Your Messages</h2>
-    <ul>
-        <li th:each="msg : ${messages}" th:utext="${msg}"></li>
-    </ul>
-</div>
