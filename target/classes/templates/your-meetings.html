@@ -1,0 +1,9 @@
+<th:block th:replace="fragments/header :: header"></th:block>
+<div class="container">
+    <h2>Your Meetings</h2>
+    <ul>
+        <li th:each="meeting : ${meetings}">
+            <span th:text="${meeting.skillName}"></span> with <span th:text="${meeting.tutor}"></span> at <span th:text="${meeting.dateTime}"></span>
+        </li>
+    </ul>
+</div>

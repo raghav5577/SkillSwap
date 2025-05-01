@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title} ?: 'Skill Swap'">Skill Swap</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<header style="width:100%;background:#4f8cff;color:#fff;padding:0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:18px 32px;">
+        <div style="font-size:2rem;font-weight:bold;letter-spacing:2px;">
+            <a href="/dashboard" style="color:#fff;text-decoration:none;">SKILL SWAP</a>
+        </div>
+        <div>
+            <a href="/profile" style="color:#fff;text-decoration:none;font-size:1.1rem;padding:8px 18px;border-radius:20px;background:rgba(255,255,255,0.12);transition:background 0.2s;">
+                <span style="vertical-align:middle;">&#128100;</span> Account
+            </a>
+        </div>
+    </div>
+</header>
+</body>
+<main>
+<ul class="nav-links">
+    <li><a href="/skills">View/Add Skills</a></li>
+    <li><a href="/meetings">Schedule/View Meetings</a></li>
+    <li><a href="/your-meetings">Your Meetings</a></li>
+    <li><a href="/messages">Your Messages</a></li>
+    <li><a href="/profile">Profile/Account</a></li>
+</ul>

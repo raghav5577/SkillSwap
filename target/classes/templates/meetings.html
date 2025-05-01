@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Skill Swap - Meetings</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 40px auto 0 auto;
+            padding: 30px 40px;
+            background: #fff;
+            min-height: 100vh;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            border-radius: 12px;
+        }
+        #meeting-suggestions {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 42px;
+            z-index: 1000;
+        }
+        #meeting-suggestions ul {
+            background: #fff;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin: 0;
+            padding: 5px 0;
+            list-style: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 0 0 6px 6px;
+        }
+        #meeting-suggestions li {
+            padding: 6px 16px;
+            cursor: pointer;
+        }
+        #meeting-suggestions li:hover {
+            background: #f0f4fa;
+        }
+    </style>
+</head>
+<body>
+    <a href="/dashboard" style="position:absolute;top:24px;left:24px;font-size:2rem;text-decoration:none;color:#4f8cff;z-index:1000;">&#8592;</a>
+    <div class="container">
+        <h2>Schedule a Meeting</h2>
+        <form th:action="@{/meetings}" method="post" style="position:relative;">
+            <label>Skill Name: <input type="text" id="meeting-skill-search" name="skillName" autocomplete="off" style="width:100%;"/></label>
+            <div id="meeting-suggestions"></div>
+            <label>Tutor: <input type="text" name="tutor"/></label>
+            <label>Date & Time: <input type="text" name="dateTime" placeholder="YYYY-MM-DD HH:MM"/></label>
+            <button type="submit">Schedule</button>
+        </form>
+        <h3>All Meetings</h3>
+        <ul>
+            <li th:each="meeting : ${meetings}">
+                <span th:text="${meeting.skillName}"></span> | Tutor: <span th:text="${meeting.tutor}"></span> | Learner: <span th:text="${meeting.learner}"></span> | At: <span th:text="${meeting.dateTime}"></span>
+            </li>
+        </ul>
+        <a href="/dashboard">Back to Dashboard</a>
+    </div>
+</body>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('meeting-skill-search');
+    const suggestionsBox = document.getElementById('meeting-suggestions');
+    if (input) {
+        input.addEventListener('input', function() {
+            const query = input.value;
+            if (query.length === 0) {
+                suggestionsBox.innerHTML = '';
+                return;
+            }
+            fetch('/api/skill-suggestions?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsBox.innerHTML = '';
+                    if (data.length > 0) {
+                        const list = document.createElement('ul');
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            li.onclick = () => {
+                                input.value = item;
+                                suggestionsBox.innerHTML = '';
+                            };
+                            list.appendChild(li);
+                        });
+                        suggestionsBox.appendChild(list);
+                    }
+                });
+        });
+        document.addEventListener('click', function(e) {
+            if (!suggestionsBox.contains(e.target) && e.target !== input) {
+                suggestionsBox.innerHTML = '';
+            }
+        });
+    }
+});
+</script>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<th:block th:replace="fragments/header :: header"></th:block>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Messages</title>
+</head>
+<body>
+    <a href="/dashboard" style="position:absolute;top:24px;left:24px;font-size:2rem;text-decoration:none;color:#4f8cff;z-index:1000;">&#8592;</a>
+    <div class="container">
+        <h2>Your Messages</h2>
+        <ul>
+            <li th:each="msg : ${messages}" th:utext="${msg}"></li>
+        </ul>
+    </div>
+</body>
+</html>
+
+<div class="container">
+    <h2>Your Messages</h2>
+    <ul>
+        <li th:each="msg : ${messages}" th:utext="${msg}"></li>
+    </ul>
+</div>

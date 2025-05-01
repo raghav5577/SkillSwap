@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<th:block th:replace="fragments/header :: header"></th:block>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Skill Swap - Skills</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 40px auto 0 auto;
+            padding: 30px 40px;
+            background: #fff;
+            min-height: 100vh;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            border-radius: 12px;
+        }
+        #skills-suggestions {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 42px;
+            z-index: 1000;
+        }
+        #skills-suggestions ul {
+            background: #fff;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin: 0;
+            padding: 5px 0;
+            list-style: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 0 0 6px 6px;
+        }
+        #skills-suggestions li {
+            padding: 6px 16px;
+            cursor: pointer;
+        }
+        #skills-suggestions li:hover {
+            background: #f0f4fa;
+        }
+    </style>
+</head>
+<body>
+    <a href="/dashboard" style="position:absolute;top:24px;left:24px;font-size:2rem;text-decoration:none;color:#4f8cff;z-index:1000;">&#8592;</a>
+    <div class="container">
+        <h2>Skills</h2>
+        <form th:action="@{/skills}" method="post">
+            <label>Skill Name: <input type="text" id="add-skill-name" name="name" autocomplete="off"/></label>
+            <div id="add-skill-suggestions" style="position:relative;"></div>
+            <label>Description: <input type="text" name="description"/></label>
+            <button type="submit">Add Skill</button>
+        </form>
+        <form th:action="@{/skills}" method="get" style="margin-top:20px;position:relative;">
+            <label>Search Skill: <input type="text" id="skills-search" name="query" th:value="${query}" style="width:100%;" autocomplete="off"/></label>
+            <div id="skills-suggestions"></div>
+            <label>Search Tutor: <input type="text" id="tutor-search" name="tutor" th:value="${tutor}" style="width:100%;" autocomplete="off"/></label>
+            <div id="tutor-suggestions"></div>
+            <button type="submit">Search</button>
+        </form>
+        <h3>Available Skills</h3>
+        <ul>
+            <li th:each="skill : ${skills}">
+                <b th:text="${skill.name}"></b> - <span th:text="${skill.description}"></span> (Tutor: <span th:text="${skill.tutor}"></span>)
+            </li>
+        </ul>
+        <a href="/dashboard">Back to Dashboard</a>
+    </div>
+</body>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Skill Name suggestions (for the add skill form)
+    const addSkillInput = document.getElementById('add-skill-name');
+    const addSkillSuggestionsBox = document.getElementById('add-skill-suggestions');
+    if (addSkillInput) {
+        addSkillInput.addEventListener('input', function() {
+            const query = addSkillInput.value;
+            if (query.length === 0) {
+                addSkillSuggestionsBox.innerHTML = '';
+                return;
+            }
+            fetch('/api/skill-suggestions?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    addSkillSuggestionsBox.innerHTML = '';
+                    if (data.length > 0) {
+                        const list = document.createElement('ul');
+                        list.style.position = 'absolute';
+                        list.style.background = '#fff';
+                        list.style.border = '1px solid #ccc';
+                        list.style.width = addSkillInput.offsetWidth + 'px';
+                        list.style.margin = 0;
+                        list.style.padding = '5px';
+                        list.style.zIndex = 1000;
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            li.style.cursor = 'pointer';
+                            li.onclick = () => {
+                                addSkillInput.value = item;
+                                addSkillSuggestionsBox.innerHTML = '';
+                            };
+                            list.appendChild(li);
+                        });
+                        addSkillSuggestionsBox.appendChild(list);
+                    }
+                });
+        });
+        document.addEventListener('click', function(e) {
+            if (!addSkillSuggestionsBox.contains(e.target) && e.target !== addSkillInput) {
+                addSkillSuggestionsBox.innerHTML = '';
+            }
+        });
+    }
+
+    // Skill search suggestions (for the search form)
+    const skillInput = document.getElementById('skills-search');
+    const skillSuggestionsBox = document.getElementById('skills-suggestions');
+    if (skillInput) {
+        skillInput.addEventListener('input', function() {
+            const query = skillInput.value;
+            if (query.length === 0) {
+                skillSuggestionsBox.innerHTML = '';
+                return;
+            }
+            fetch('/api/skill-suggestions?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    skillSuggestionsBox.innerHTML = '';
+                    if (data.length > 0) {
+                        const list = document.createElement('ul');
+                        list.style.position = 'absolute';
+                        list.style.background = '#fff';
+                        list.style.border = '1px solid #ccc';
+                        list.style.width = skillInput.offsetWidth + 'px';
+                        list.style.margin = 0;
+                        list.style.padding = '5px';
+                        list.style.zIndex = 1000;
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            li.style.cursor = 'pointer';
+                            li.onclick = () => {
+                                skillInput.value = item;
+                                skillSuggestionsBox.innerHTML = '';
+                            };
+                            list.appendChild(li);
+                        });
+                        skillSuggestionsBox.appendChild(list);
+                    }
+                });
+        });
+        document.addEventListener('click', function(e) {
+            if (!skillSuggestionsBox.contains(e.target) && e.target !== skillInput) {
+                skillSuggestionsBox.innerHTML = '';
+            }
+        });
+    }
+
+    // Tutor search suggestions (for the search form)
+    const tutorInput = document.getElementById('tutor-search');
+    const tutorSuggestionsBox = document.getElementById('tutor-suggestions');
+    if (tutorInput) {
+        tutorInput.addEventListener('input', function() {
+            const query = tutorInput.value;
+            if (query.length === 0) {
+                tutorSuggestionsBox.innerHTML = '';
+                return;
+            }
+            fetch('/api/tutor-suggestions?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    tutorSuggestionsBox.innerHTML = '';
+                    if (data.length > 0) {
+                        const list = document.createElement('ul');
+                        list.style.position = 'absolute';
+                        list.style.background = '#fff';
+                        list.style.border = '1px solid #ccc';
+                        list.style.width = tutorInput.offsetWidth + 'px';
+                        list.style.margin = 0;
+                        list.style.padding = '5px';
+                        list.style.zIndex = 1000;
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = item;
+                            li.style.cursor = 'pointer';
+                            li.onclick = () => {
+                                tutorInput.value = item;
+                                tutorSuggestionsBox.innerHTML = '';
+                            };
+                            list.appendChild(li);
+                        });
+                        tutorSuggestionsBox.appendChild(list);
+                    }
+                });
+        });
+        document.addEventListener('click', function(e) {
+            if (!tutorSuggestionsBox.contains(e.target) && e.target !== tutorInput) {
+                tutorSuggestionsBox.innerHTML = '';
+            }
+        });
+    }
+});
+</script>

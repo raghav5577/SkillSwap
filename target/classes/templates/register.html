@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Skill Swap - Register</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form th:action="@{/register}" method="post">
+            <label>Username:
+                <input type="text" name="username" required/>
+            </label>
+            <label>Password:
+                <input type="password" name="password" required/>
+            </label>
+            <label>Role:
+                <select name="role">
+                    <option value="TUTOR">Tutor</option>
+                    <option value="LEARNER">Learner</option>
+                </select>
+            </label>
+            <button type="submit">Register</button>
+        </form>
+        <div th:if="${error}" style="color:red;" th:text="${error}"></div>
+        <a href="/login">Back to Login</a>
+    </div>
+</body>
+</html>

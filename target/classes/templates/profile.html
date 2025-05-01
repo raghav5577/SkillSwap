@@ -1,0 +1,22 @@
+<th:block th:replace="fragments/header :: header"></th:block>
+<a href="/dashboard" style="position:absolute;top:24px;left:24px;font-size:2rem;text-decoration:none;color:#4f8cff;z-index:1000;">&#8592;</a>
+<div class="container">
+    <h2>Your Account</h2>
+    <div>
+        <p><b>Username:</b> <span th:text="${username}">User</span></p>
+        <h3>Your Skills</h3>
+        <ul>
+            <li th:each="skill : ${skills}">
+                <b th:text="${skill.name}"></b> - <span th:text="${skill.description}"></span>
+            </li>
+        </ul>
+        <h3>Past Meetings</h3>
+        <ul>
+            <li th:each="meeting : ${meetings}">
+                <span th:text="${meeting.skillName}"></span> with <span th:text="${meeting.tutor}"></span> at <span th:text="${meeting.dateTime}"></span>
+            </li>
+        </ul>
+        <h3>Other User Data</h3>
+        <p><!-- Add more user data here as needed --></p>
+    </div>
+</div>
