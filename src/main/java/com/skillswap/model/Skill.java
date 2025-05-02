@@ -100,5 +100,5 @@ public class Skill {
     public void setAvailability(List<String> availability) { this.availability = availability; }
     public double getHourlyRate() { return hourlyRate; }
     public void setHourlyRate(double hourlyRate) { this.hourlyRate = hourlyRate; }
-    public String getFormattedHourlyRate() { return String.format("$%.2f", hourlyRate); }
+    public String getFormattedHourlyRate() { return String.format("₹%.2f", hourlyRate); }
 }

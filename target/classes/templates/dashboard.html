@@ -442,10 +442,6 @@
                 <i class="far fa-comment-dots"></i>
                 <span class="notification-badge" th:if="${messages != null and !messages.empty}" th:text="${messages.size()}">3</span>
             </a>
-            <a href="/notifications" class="header-icon">
-                <i class="far fa-bell"></i>
-                <span class="notification-badge">2</span>
-            </a>
             <div class="profile-section">
                 <img th:src="${userAvatar != null ? userAvatar : 'https://i.pravatar.cc/150?img=1'}" 
                      alt="Profile" 
